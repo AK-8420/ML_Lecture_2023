@@ -40,6 +40,9 @@ legend("Steepest gradient descent method", "Newton method")
 ylabel("$\| J(w^{(t)}) - J(\hat{w}) \|_1$", 'Interpreter','latex')
 xlabel("iteration")
 ylim([1e-8, 1e2])
-
 f1.Position(3:4) = [480 320];
+
+% save
 print('-f1', "problem1_result",'-dpng')
+clear("f1")
+save("problem1_result")
