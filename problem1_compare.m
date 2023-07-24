@@ -14,6 +14,7 @@ data.lambda = 0.25;
 
 % learning
 [w_GD, converge_rate_GD, idx_GD] = problem1_GD(data);
+[w_N, converge_rate_N, idx_N] = problem1_Newton(data);
 
 % Generate test data (same as dataset IV)
 nt = 100;
@@ -25,10 +26,20 @@ xt = cat(2, xt, ones(nt,1));
 
 % evaluate
 f = @(w) 2*(xt*w > 0) - 1;
-correct_number = sum( yt == f(w_GD) )
+correct_number_GD = sum( yt == f(w_GD) )
+correct_number_Newton = sum( yt == f(w_N) )
+difference_of_w = norm(w_GD - w_N)
 
 % view
-figure
-hold on
+f1 = figure;
 semilogy(1:idx_GD, converge_rate_GD(1:idx_GD));
+hold on
+semilogy(1:idx_N, converge_rate_N(1:idx_N));
 hold off
+legend("Steepest gradient descent method", "Newton method")
+ylabel("$\| J(w^{(t)}) - J(\hat{w}) \|_1$", 'Interpreter','latex')
+xlabel("iteration")
+ylim([1e-8, 1e2])
+
+f1.Position(3:4) = [480 320];
+print('-f1', "problem1_result",'-dpng')
