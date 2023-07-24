@@ -30,7 +30,7 @@ correct_number_GD = sum( yt == f(w_GD) )
 correct_number_Newton = sum( yt == f(w_N) )
 difference_of_w = norm(w_GD - w_N)
 
-% view
+% view (all)
 f1 = figure;
 semilogy(1:idx_GD, converge_rate_GD(1:idx_GD));
 hold on
@@ -42,7 +42,22 @@ xlabel("iteration")
 ylim([1e-8, 1e2])
 f1.Position(3:4) = [480 320];
 
+% view (100 iter)
+f2 = figure;
+range = 100;
+semilogy(1:range, converge_rate_GD(1:range));
+hold on
+semilogy(1:range, converge_rate_N(1:range));
+hold off
+legend("Steepest gradient descent method", "Newton method")
+ylabel("$\| J(w^{(t)}) - J(\hat{w}) \|_1$", 'Interpreter','latex')
+xlabel("iteration")
+ylim([1e-8, 1e2])
+f2.Position(3:4) = [480 320];
+
 % save
 print('-f1', "problem1_result",'-dpng')
+print('-f2', "problem1_result_100iter",'-dpng')
 clear("f1")
+clear("f2")
 save("problem1_result")
