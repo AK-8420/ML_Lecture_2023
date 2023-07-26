@@ -10,7 +10,7 @@ dp = @(w) 1/2*(data.A + data.A')*(w - data.mu);
 ST = @(x, gamma) sign(x).*max(abs(x)-gamma, 0);
 
 % initializing
-w = zeros(size(data.mu));
+w = [3; -1];
 
 % main loop
 converge_rate = zeros(1, data.max_iteration);
