@@ -1,0 +1,34 @@
+clear
+close all
+
+% deta
+data.A = [3, 0.5;
+         0.5, 1];
+data.mu = [1; 2];
+data.max_iteration = 1000;
+
+lambda = 0.01:0.01:10.0;
+len = length(lambda);
+
+w = zeros(2, len);
+converge_rate = zeros(len, data.max_iteration);
+idx = zeros(len, 1);
+
+% learning
+for i = 1:len
+    data.lambda = lambda(i);
+    [w(:, i), converge_rate(i, :), idx(i)] = Standard_PG(data);
+end
+
+% view
+f1 = figure;
+semilogy(1:idx_1, converge_rate(1:idx_1));
+ylabel("$\| J(w^{(t)}) - J(\hat{w}) \|_1$", 'Interpreter','latex')
+xlabel("$\lambda$", 'Interpreter','latex')
+ylim([1e-8, 1e2])
+f1.Position(3:4) = [480 320];
+
+% save
+print('-f1', "problem2_result",'-dpng')
+clear("f1")
+save("problem2_result")
