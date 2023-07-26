@@ -5,7 +5,8 @@ close all
 data.A = [300, 0.5;
           0.5, 10];
 data.mu = [1; 2];
-data.lambda = 0.5;
+data.lambda = 1;
+data.max_iteration = 1000;
 
 % learning
 [w_1, converge_rate_1, idx_1] = Standard_PG(data);

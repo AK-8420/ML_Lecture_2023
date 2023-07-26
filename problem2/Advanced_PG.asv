@@ -5,7 +5,7 @@ function [w, converge_rate, i] = Advanced_PG(data)
 % training setting
 stop_criteria = 1e-8;
 eta = 1/max(eig(data.A));
-rho = 0.5;
+rho = 0.9;
 
 % function
 J = @(w) 1/2*((w - data.mu)')*data.A*(w - data.mu) + data.lambda*sum(abs(w));
@@ -14,7 +14,7 @@ ST = @(x, gamma) sign(x).*max(abs(x)-gamma, 0);
 
 % initializing
 w = zeros(size(data.mu));
-v = zeros(size(w));
+h = zeros(size(w));
 
 % main loop
 converge_rate = zeros(1, data.max_iteration);
@@ -23,9 +23,9 @@ for i = 1:data.max_iteration
     w_pre = w;
     dpw = dp(w_pre);
 
-    v = rho*v + (1 - rho)*(dpw.^2);
-    eta_t = eta./(sqrt(v) + eps);
-    w = ST(w_pre - eta_t.*dpw, data.lambda*eta_t);
+    h = rho*h + (1 - rho)*(dpw.^2);
+    eta_t = eta/(sqrt(h) + eps);
+    w = ST(w_pre - eta_t*dpw, data.lambda*eta_t');
 
     converge_rate(i) = abs(J(w_pre) - J(w));
 
