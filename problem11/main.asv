@@ -38,13 +38,13 @@ xlabel("m");
 f1.Position(3:4) = [640 160];
 
 % view (Fourier coefficients)
-f = linspace(0, (N/2)/N, N/2);
+f = linspace(0, (N/2)/N, N);
 fftg = abs(A'*g);
 ffty = abs(A'*y);
 f2 = figure;
-subplot(121), stem(f, fftg(1:(N/2)), "MarkerSize", 3), title('FFT of True signal');
+subplot(121), stem(f, fftg(1:length(f)), "MarkerSize", 3), title('FFT of True signal');
 xlabel("Frequency");
-subplot(122), stem(f, ffty(1:(N/2)), "MarkerSize", 3), title('FFT of Noisy signal');
+subplot(122), stem(f, ffty(1:length(f)), "MarkerSize", 3), title('FFT of Noisy signal');
 xlabel("Frequency");
 f2.Position(3:4) = [640 160];
 
