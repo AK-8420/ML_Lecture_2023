@@ -25,7 +25,7 @@ ylim([1e-8, 1e2])
 f1.Position(3:4) = [480 320];
 
 % compare
-difference_of_w = norm(w_2 - w_1)
+dif
 
 % save
 print('-f1', "problem2_2_result",'-dpng')

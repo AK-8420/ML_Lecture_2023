@@ -4,8 +4,8 @@ function [w, converge_rate, i] = Advanced_PG(data)
 %----------------------------
 % training setting
 stop_criteria = 1e-8;
-eta = 1/max(eig(data.A));
-rho = 0.5;
+eta = 0.1;
+rho = 0.9;
 
 % function
 J = @(w) 1/2*((w - data.mu)')*data.A*(w - data.mu) + data.lambda*sum(abs(w));
@@ -35,13 +35,13 @@ for i = 1:data.max_iteration
 end
 
 % %----------------------------
-% % Adam (Not working)
+% % Adam (slower than RMSProp)
 % %----------------------------
 % % training setting
 % stop_criteria = 1e-8;
-% eta = 1/max(eig(data.A));
+% eta = 0.125;
 % beta1 = 0.9;
-% beta2 = 0.9;
+% beta2 = 0.99;
 % 
 % % function
 % J = @(w) 1/2*((w - data.mu)')*data.A*(w - data.mu) + data.lambda*sum(abs(w));
@@ -65,7 +65,9 @@ end
 %     m_hat = m/(1 - beta1^i);
 %     v_hat = v/(1 - beta2^i);
 % 
-%     w = ST(w_pre - eta*m_hat./(sqrt(v_hat) + eps), data.lambda*(eta./(sqrt(v_hat) + eps)));
+%     eta_t = eta./(sqrt(v_hat) + eps);
+% 
+%     w = ST(w_pre - eta_t.*m_hat, data.lambda*eta_t);
 % 
 %     converge_rate(i) = abs(J(w_pre) - J(w));
 % 
