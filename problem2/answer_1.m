@@ -10,10 +10,10 @@ data.max_iteration = 1000;
 lambda = 0.01:0.01:10.0;
 len = length(lambda);
 
+% learning
 w = zeros(2, len);
 optimal_cost = zeros(1, len);
 
-% learning
 for i = 1:len
     data.lambda = lambda(i);
     [w(:, i), converge_rate, idx] = Standard_PG(data);
@@ -26,7 +26,6 @@ f1 = figure;
 semilogy(lambda, optimal_cost);
 ylabel("$\| J(w^{(t)}) - J(\hat{w}) \|_1$", 'Interpreter','latex')
 xlabel("$\lambda$", 'Interpreter','latex')
-ylim([1e-8, 1e2])
 f1.Position(3:4) = [480 320];
 
 % save
