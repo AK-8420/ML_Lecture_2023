@@ -75,3 +75,41 @@ end
 %         break;
 %     end
 % end
+
+% %----------------------------
+% % Lion
+% %----------------------------
+% % training setting
+% stop_criteria = 1e-8;
+% eta = 0.1;
+% beta1 = 0.9;
+% beta2 = 0.99;
+% stepsize = 1;
+% 
+% % function
+% J = @(w) 1/2*((w - data.mu)')*data.A*(w - data.mu) + data.lambda*sum(abs(w));
+% dp = @(w) 1/2*(data.A + data.A')*(w - data.mu);
+% ST = @(x, gamma) sign(x).*max(abs(x)-gamma, 0);
+% 
+% % initializing
+% w = [3; -1];
+% c = zeros(size(w));
+% m = zeros(size(w));
+% 
+% % main loop
+% converge_rate = zeros(1, data.max_iteration);
+% 
+% for i = 1:data.max_iteration
+%     w_pre = w;
+%     dpw = dp(w_pre);
+% 
+%     c = beta1*m + (1 - beta1)*dpw;
+%     w = ST(w_pre - eta.*(sign(c) + stepsize*w_pre), data.lambda*eta);
+%     m = beta2*m + (1 - beta2)*dpw;
+% 
+%     converge_rate(i) = abs(J(w_pre) - J(w));
+% 
+%     if converge_rate(i) < stop_criteria
+%         break;
+%     end
+% end
