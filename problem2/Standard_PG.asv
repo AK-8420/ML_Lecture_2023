@@ -1,0 +1,27 @@
+function [w, converge_rate, i] = Standard_PG(data)
+
+% training setting
+stop_criteria = 1e-8;
+eta = 1/max(eig(data.A));
+gamma = 1/eta - 0.01;   % gamma
+
+% function
+J = @(w) 1/2*((w - data.mu)')*data.A*(w - data.mu) + data.lambda*sum(abs(w));
+ST = @(x, gamma) sign(x).*max(abs(x)-gamma, 0);
+
+% initializing
+w = zeros(size(data.x, 2), 1);
+
+% main loop
+converge_rate = zeros(1, data.max_iteration);
+
+for i = 1:data.max_iteration
+    w_pre = w;
+    w = ST(w_pre - eta*phi(w_pre), gamma);
+
+    converge_rate(i) = abs(J(w_pre, data) - J(w, data));
+
+    if converge_rate(i) < stop_criteria
+        break;
+    end
+end
