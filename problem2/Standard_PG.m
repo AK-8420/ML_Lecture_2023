@@ -17,7 +17,7 @@ converge_rate = zeros(1, data.max_iteration);
 
 for i = 1:data.max_iteration
     w_pre = w;
-    w = ST(w_pre - eta*dp(w_pre), eta);
+    w = ST(w_pre - eta*dp(w_pre), data.lambda*eta);
 
     converge_rate(i) = abs(J(w_pre) - J(w));
 
