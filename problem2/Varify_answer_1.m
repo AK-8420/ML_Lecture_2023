@@ -32,3 +32,5 @@ xlabel("$\lambda$", 'Interpreter','latex')
 ylabel("$w_1$", 'Interpreter','latex')
 zlabel("$w_2$", 'Interpreter','latex')
 f1.Position(3:4) = [480 320];
+
+save("Varify_answer_1_result", "w_hat")
