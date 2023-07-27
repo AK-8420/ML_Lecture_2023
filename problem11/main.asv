@@ -13,7 +13,6 @@ close all
 %----------------------------------------
 para.stop_criteria = 1e-8;
 para.max_iteration = 10000;
-para.gamma = 0.8;
 repeat_number = 10;   % the count of experiments
 
 noise_strength = 1.0; % standard deviation of gaussian noise
@@ -44,7 +43,7 @@ end
 %----------------------------------------
 x_L1 = zeros(N, length(lambda_all), repeat_number);
 x_GMC = zeros(N, length(lambda_all), repeat_number);
-x_L1_cvx = zeros(N, length(lambda_all), repeat_number); % Varidation
+x_L1_cvx = zeros(N, length(lambda_all), repeat_number);
 ys = zeros(M, length(lambda_all), repeat_number);
 
 for i = 1:length(lambda_all)
@@ -58,10 +57,14 @@ for i = 1:length(lambda_all)
         noise = noise_strength*randn(M, 1);
         data.y = g + noise;
 
+        % % get solution for varidation
+        % x_L1_cvx(:, i, j) = solver_LASSO_cvx(data, para);
+
         % get solution
-        x_L1(:, i, j) = solver_LASSO(data, para);
+        para.gamma = 0;
+        x_L1(:, i, j) = solver_GMC(data, para);
+        para.gamma = 0.8;
         x_GMC(:, i, j) = solver_GMC(data, para);
-        x_L1_cvx(:, i, j) = solver_LASSO_cvx(data, para);% Varidation
     
         % save
         ys(:, i, j) = data.y;
@@ -73,15 +76,25 @@ end
 %----------------------------------------
 RMSE_L1 = zeros(length(lambda_all), repeat_number); % for each lambda
 RMSE_GMC = zeros(length(lambda_all), repeat_number); % for each lambda
+RMSE_L1_cvx = zeros(length(lambda_all), repeat_number); % for each lambda
 for i = 1:length(lambda_all)
     for j = 1:repeat_number
         RMSE_L1(i, j) = norm(g - data.A*x_L1(:,i,j)) / sqrt(M);
         RMSE_GMC(i, j) = norm(g - data.A*x_GMC(:,i,j)) / sqrt(M);
+        RMSE_L1_cvx(i, j) = norm(g - data.A*x_L1_cvx(:,i,j)) / sqrt(M);
     end
 end
 
 ARMSE_L1 = mean(RMSE_L1, 2)
 ARMSE_GMC = mean(RMSE_GMC, 2)
+ARMSE_L1_cvx = mean(RMSE_L1_cvx, 2)
+
+%----------------------------------------
+% Varidation
+%----------------------------------------
+Numel = N*length(lambda_all)*repeat_number;
+difference = norm(reshape(x_L1_cvx, [Numel, 1]) - reshape(x_L1, [Numel, 1]));
+
 
 %----------------------------------------
 % view
@@ -92,7 +105,7 @@ f1 = figure;
 subplot(121), plot(1:M, g), title('True signal');
 ylim([-5, 5]);
 xlabel("m");
-subplot(122), plot(1:M, ys()), title('Observed signal');
+subplot(122), plot(1:M, ys(:,1,1)), title('Observed signal');
 ylim([-5, 5]);
 xlabel("m");
 f1.Position(3:4) = [640 160];
@@ -100,7 +113,7 @@ f1.Position(3:4) = [640 160];
 % Fourier coefficients of original signal
 f = linspace(0, (N/2)/N, N/2);
 fftg = abs(data.A'*g);
-ffty = abs(data.A'*y);
+ffty = abs(data.A'*ys(:,1,1));
 f2 = figure;
 subplot(121), stem(f, fftg(1:(N/2)), "MarkerSize", 3), title('FFT of True signal');
 ylim([0, max(ffty)+0.2]);
