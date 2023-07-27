@@ -13,10 +13,10 @@ close all
 %----------------------------------------
 para.stop_criteria = 1e-8;
 para.max_iteration = 10000;
-repeat_number = 1;   % the count of experiments
+repeat_number = 10;   % the count of experiments
 
 noise_strength = 1.0; % standard deviation of gaussian noise
-lambda_all = 0.5;%0.5:0.25:3.5;
+lambda_all = 0.5:0.25:3.5;
 
 %----------------------------------------
 % data
@@ -89,7 +89,7 @@ ARMSE_L1 = mean(RMSE_L1, 2);
 ARMSE_GMC = mean(RMSE_GMC, 2);
 % ARMSE_L1_cvx = mean(RMSE_L1_cvx, 2)
 
-[~, optimal_idx] = max(ARMSE_GMC);
+[~, optimal_idx] = min(ARMSE_GMC);
 fprintf("The best lambda for GMC is %f)\n", lambda_all(optimal_idx));
 ARMSE_L1(optimal_idx)
 ARMSE_GMC(optimal_idx)
@@ -162,6 +162,20 @@ ylabel("Avarage RMSE", "Interpreter", "latex");
 xlabel("$\lambda$", "Interpreter", "latex");
 f5.Position(3:4) = [640 320];
 
+% compare
+f6 = figure;
+range = 1:M/4;
+plot(range, g(range), "k");
+hold on;
+opt_L1 = data.A*x_L1(:, optimal_idx, 1);
+opt_GMC = data.A*x_GMC(:, optimal_idx, 1);
+plot(range, opt_L1(range), "b--");
+plot(range, opt_GMC(range), "r-.");
+hold off;
+ylim([-5, 5]);
+xlabel("m");
+legend("true signal", "L1 norm", "GMC penalty");
+
 
 %----------------------------------------
 % save
@@ -170,7 +184,7 @@ print('-f1', "true_signal_and_noisy_signal",'-dpng')
 print('-f2', "true_signal_and_noisy_signal_FFT",'-dpng')
 print('-f3', "result_time_domain",'-dpng')
 print('-f4', "result_frequency_domain",'-dpng')
-print('-f4', "result_ARMSE",'-dpng')
+print('-f5', "result_ARMSE",'-dpng')
 clear("f1")
 clear("f2")
 clear("f3")
