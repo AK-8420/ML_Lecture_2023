@@ -17,7 +17,7 @@ imagesc(A);
 lambda = 1; % 0.5:0.5:3.0;
 max_iteration = 1000;
 stop_criteria = 1e-8;
-eta = 0.5;
+eta = 0.5; % 1/2
 
 % function
 cost = @(Z, lambda) sum(abs(Z - A).^2, "omitnan") + lambda*NN(Z);
