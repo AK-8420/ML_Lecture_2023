@@ -143,10 +143,10 @@ f = linspace(0, (N/2)/N, N/2);
 fftg = abs(x_L1(:, optimal_idx, 1));
 ffty = abs(x_GMC(:, optimal_idx, 1));
 f4 = figure;
-subplot(121), stem(f, fftg(1:(N/2)), "MarkerSize", 3), title('FFT [L1 norm]');
+subplot(121), stem(f, fftg(1:(N/2)), "MarkerSize", 3), title('Fourier coefficient [L1 norm]');
 ylim([0, max(ffty)+0.2]);
 xlabel("Frequency");
-subplot(122), stem(f, ffty(1:(N/2)), "MarkerSize", 3), title('FFT [GMC penalty]');
+subplot(122), stem(f, ffty(1:(N/2)), "MarkerSize", 3), title('Fourier coefficient [GMC penalty]');
 ylim([0, max(ffty)+0.2]);
 xlabel("Frequency");
 f4.Position(3:4) = [640 160];
@@ -164,14 +164,17 @@ f5.Position(3:4) = [640 320];
 
 % compare
 f6 = figure;
-plot(1:M/2, g(), "k:");
+range = 1:M/4;
+plot(range, g(range), "k");
 hold on;
-plot(1:M/2, data.A*x_L1(1:M/2, optimal_idx, 1), "b--");
-plot(1:M/2, data.A*x_GMC(1:M/2, optimal_idx, 1), "r");
+opt_L1 = data.A*x_L1(:, optimal_idx, 1);
+opt_GMC = data.A*x_GMC(:, optimal_idx, 1);
+plot(range, opt_L1(range), "b--");
+plot(range, opt_GMC(range), "r-.");
 hold off;
 ylim([-5, 5]);
 xlabel("m");
-legend("L1 norm", "GMC penalty", "true signal");
+legend("true signal", "L1 norm", "GMC penalty");
 
 
 %----------------------------------------
@@ -182,9 +185,11 @@ print('-f2', "true_signal_and_noisy_signal_FFT",'-dpng')
 print('-f3', "result_time_domain",'-dpng')
 print('-f4', "result_frequency_domain",'-dpng')
 print('-f5', "result_ARMSE",'-dpng')
+print('-f6', "result_compare_signals",'-dpng')
 clear("f1")
 clear("f2")
 clear("f3")
 clear("f4")
 clear("f5")
+clear("f6")
 save("problem11_result")

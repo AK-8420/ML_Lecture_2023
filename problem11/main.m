@@ -130,10 +130,10 @@ f2.Position(3:4) = [640 160];
 
 % Denoised signal
 f3 = figure;
-subplot(121), plot(1:M, data.A*x_L1(:, optimal_idx, 1)), title('Denoised [L1 norm]');
+subplot(121), plot(1:M, data.A*x_L1(:, optimal_idx, 1)), title('Denoised signal [L1 norm]');
 ylim([-5, 5]);
 xlabel("m");
-subplot(122), plot(1:M, data.A*x_GMC(:, optimal_idx, 1)), title('Denoised [GMC penalty]');
+subplot(122), plot(1:M, data.A*x_GMC(:, optimal_idx, 1)), title('Denoised signal [GMC penalty]');
 ylim([-5, 5]);
 xlabel("m");
 f3.Position(3:4) = [640 160];
@@ -143,10 +143,10 @@ f = linspace(0, (N/2)/N, N/2);
 fftg = abs(x_L1(:, optimal_idx, 1));
 ffty = abs(x_GMC(:, optimal_idx, 1));
 f4 = figure;
-subplot(121), stem(f, fftg(1:(N/2)), "MarkerSize", 3), title('FFT [L1 norm]');
+subplot(121), stem(f, fftg(1:(N/2)), "MarkerSize", 3), title('Fourier coefficient [L1 norm]');
 ylim([0, max(ffty)+0.2]);
 xlabel("Frequency");
-subplot(122), stem(f, ffty(1:(N/2)), "MarkerSize", 3), title('FFT [GMC penalty]');
+subplot(122), stem(f, ffty(1:(N/2)), "MarkerSize", 3), title('Fourier coefficient [GMC penalty]');
 ylim([0, max(ffty)+0.2]);
 xlabel("Frequency");
 f4.Position(3:4) = [640 160];
