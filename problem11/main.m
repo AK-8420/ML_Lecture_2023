@@ -17,7 +17,7 @@ para.gamma = 0.8;
 repeat_number = 10;   % the count of experiments
 
 noise_strength = 1.0; % standard deviation of gaussian noise
-lambda_all = 0.5:0.25:3.5;
+lambda_all = 0.5;% 0.5:0.25:3.5;
 
 %----------------------------------------
 % data
@@ -32,10 +32,10 @@ t = 0:M-1;
 g = (2*cos(2*pi*F1*t) + sin(2*pi*F2*t))';
 
 % inverse fourier transform matrix
-A = zeros(M, N);
+data.A = zeros(M, N);
 for m = 1:M
     for n = 1:N
-        A(m,n) = exp(1i*2*pi/N*(m-1)*(n-1)) / sqrt(N);
+        data.A(m,n) = exp(1i*2*pi/N*(m-1)*(n-1)) / sqrt(N);
     end
 end
 
@@ -44,38 +44,47 @@ end
 %----------------------------------------
 x_L1 = zeros(N, length(lambda_all), repeat_number);
 x_GMC = zeros(N, length(lambda_all), repeat_number);
+x_L1_cvx = zeros(N, length(lambda_all), repeat_number); % Varidation
 ys = zeros(M, length(lambda_all), repeat_number);
 
 for i = 1:length(lambda_all)
     para.lambda = lambda_all(i);
+    fprintf("Now processing (lambda = %f)\n", para.lambda)
 
     for j = 1:repeat_number
+        fprintf("%d, ", j);
+
         % observed signal (with random noise)
         noise = noise_strength*randn(M, 1);
-        y = g + noise;
+        data.y = g + noise;
 
         % get solution
-        x_L1(:, i, j) = solver_LASSO(y, para);
-        x_GMC(:, i, j) = solver_GMC(y, para);
+        x_L1(:, i, j) = solver_LASSO(data, para);
+        x_GMC(:, i, j) = solver_GMC(data, para);
+        x_L1_cvx(:, i, j) = solver_LASSO_cvx(data, para);% Varidation
     
         % save
-        ys(:, i, j) = y;
+        ys(:, i, j) = data.y;
     end
+    fprintf("\n");
 end
 %----------------------------------------
 % Avaraged RMSE
 %----------------------------------------
 RMSE_L1 = zeros(length(lambda_all), repeat_number); % for each lambda
 RMSE_GMC = zeros(length(lambda_all), repeat_number); % for each lambda
+RMSE_L1_cvx = zeros(length(lambda_all), repeat_number); % for each lambda
 for i = 1:length(lambda_all)
     for j = 1:repeat_number
-        RMSE_L1(i, j) = norm(g - A*x_L1(:,i,j)) / sqrt(M);
-        RMSE_GMC(i, j) = norm(g - A*x_GMC(:,i,j)) / sqrt(M);
+        RMSE_L1(i, j) = norm(g - data.A*x_L1(:,i,j)) / sqrt(M);
+        RMSE_GMC(i, j) = norm(g - data.A*x_GMC(:,i,j)) / sqrt(M);
+        RMSE_L1_cvx(i, j) = norm(g - data.A*x_L1_cvx(:,i,j)) / sqrt(M);
     end
 end
 
 ARMSE_L1 = mean(RMSE_L1, 2)
 ARMSE_GMC = mean(RMSE_GMC, 2)
+ARMSE_L1_cvx = mean(RMSE_L1_cvx, 2)
 
 %----------------------------------------
 % view
@@ -86,15 +95,15 @@ f1 = figure;
 subplot(121), plot(1:M, g), title('True signal');
 ylim([-5, 5]);
 xlabel("m");
-subplot(122), plot(1:M, y), title('Observed signal');
+subplot(122), plot(1:M, ys(:,1,1)), title('Observed signal');
 ylim([-5, 5]);
 xlabel("m");
 f1.Position(3:4) = [640 160];
 
 % Fourier coefficients of original signal
 f = linspace(0, (N/2)/N, N/2);
-fftg = abs(A'*g);
-ffty = abs(A'*y);
+fftg = abs(data.A'*g);
+ffty = abs(data.A'*ys(:,1,1));
 f2 = figure;
 subplot(121), stem(f, fftg(1:(N/2)), "MarkerSize", 3), title('FFT of True signal');
 ylim([0, max(ffty)+0.2]);
